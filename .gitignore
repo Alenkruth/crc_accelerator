@@ -1,2 +1,3 @@
 # ignore any file which is hidden by default.
 .*
+*.out
