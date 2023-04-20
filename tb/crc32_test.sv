@@ -27,10 +27,12 @@ reg compute_in;
 wire [31:0] message_out;
 reg clk_in;
 reg rst_in;
+reg [31:0] polynomial_in;
 
 crc32 DUT (.message_i(message_in),
            .compute_i(compute_in), 
            .message_o(message_out),
+           .polynomial_i(polynomial_in),
            .clk_i(clk_in),
            .rst_i(rst_in)
 );
@@ -51,6 +53,7 @@ initial begin
     #(period*10);
     rst_in = 'b1;
     compute_in = 1'b0;
+    polynomial_in = 32'h04C11DB7;
     #(period);
     message_in = 32'hFFEEFFEE;
     #period;
