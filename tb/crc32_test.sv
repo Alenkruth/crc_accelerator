@@ -1,23 +1,9 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 04/19/2023 06:09:22 PM
-// Design Name: 
-// Module Name: crc32_test
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+/**
+ * File              : crc32.sv
+ * Author            : Alenkruth Krishnan Murali, Khyati Kiyawat
+ * Date              : 11.04.2023
+ */
 
 
 module crc32_test;
@@ -53,16 +39,20 @@ initial begin
     #(period*10);
     rst_in = 'b1;
     compute_in = 1'b0;
-    polynomial_in = 32'h04C11DB7;
+    polynomial_in = 32'hEDB88320;
     #(period);
-    message_in = 32'hFFEEFFEE;
+    message_in = 32'hBABECAFE;
     #period;
     rst_in = 1'b0;
     #period
     rst_in = 1'b1;
     #period
     compute_in = 1'b1;
-    #(period*64);
+    #period
+    rst_in = 1'b0;
+    #period
+    rst_in = 1'b1;	
+    #(period*64*2);
     message_in = 32'h00000000;
     compute_in = 1'b0;
     rst_in = 'b0;
