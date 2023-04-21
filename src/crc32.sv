@@ -2,8 +2,6 @@
  * File              : crc32.sv
  * Author            : Alenkruth Krishnan Murali, Khyati Kiyawat
  * Date              : 11.04.2023
- * Last Modified Date: 19.04.2023
- * Last Modified By  : Alenkruth Krishnan Murali <contact@alenkruth.com>
  */
 
 `timescale 1ns / 1ps
@@ -64,7 +62,7 @@ module crc32(
                 padded_polynomial <= padded_polynomial >> 1;
                 count <= count - 1;
                 // we right shift 32 times before we get the output
-                if (count == 6'd31) begin // i think it should be 31. Since, 63-32.
+                if (count == 6'd32) begin // i think it should be 32. Since we start at 63, and the result will propagate in the 31st cycle.
                     crc_out <= padded_message_i[31:0];
                 end
                 /*else begin
