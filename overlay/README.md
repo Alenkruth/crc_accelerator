@@ -10,7 +10,9 @@ AXI IP interacting with the Zynq Processing System.
 The notebook is commented and documented to make it easier for everyone to 
 follow.
 The main takeaway from the demonstration is that the CRC32 accelerator is  
-~60x faster than a python crc library while computing for a 4kB image.
+~50x faster than a python crc library while computing for a 4kB image.
+Likewise, the 16bit CRC accelerator is ~25x faster than software CRC.
+
 To our knowledge, the ARM processor on the Zynq7000 FPGA does not have a 
 dedicated CRC Accelerator on board.
 This explains the speedup we get from a dedicated accelerator.
