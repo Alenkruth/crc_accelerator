@@ -1,0 +1,279 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.5/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.5/ http://www.mediawiki.org/xml/export-0.5.xsd" version="0.5" xml:lang="en">
+  <siteinfo>
+    <sitename>UVA ECE &amp; BME wiki</sitename>
+    <base>http://venividiwiki.ee.virginia.edu/mediawiki/index.php/Main_Page</base>
+    <generator>MediaWiki 1.17.0</generator>
+    <case>first-letter</case>
+    <namespaces>
+      <namespace key="-2" case="first-letter">Media</namespace>
+      <namespace key="-1" case="first-letter">Special</namespace>
+      <namespace key="0" case="first-letter" />
+      <namespace key="1" case="first-letter">Talk</namespace>
+      <namespace key="2" case="first-letter">User</namespace>
+      <namespace key="3" case="first-letter">User talk</namespace>
+      <namespace key="4" case="first-letter">UVA ECE &amp; BME wiki</namespace>
+      <namespace key="5" case="first-letter">UVA ECE &amp; BME wiki talk</namespace>
+      <namespace key="6" case="first-letter">File</namespace>
+      <namespace key="7" case="first-letter">File talk</namespace>
+      <namespace key="8" case="first-letter">MediaWiki</namespace>
+      <namespace key="9" case="first-letter">MediaWiki talk</namespace>
+      <namespace key="10" case="first-letter">Template</namespace>
+      <namespace key="11" case="first-letter">Template talk</namespace>
+      <namespace key="12" case="first-letter">Help</namespace>
+      <namespace key="13" case="first-letter">Help talk</namespace>
+      <namespace key="14" case="first-letter">Category</namespace>
+      <namespace key="15" case="first-letter">Category talk</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Parameterized CRC Accelerator</title>
+    <id>12008</id>
+    <revision>
+      <id>46053</id>
+      <timestamp>2023-05-10T00:32:17Z</timestamp>
+      <contributor>
+        <username>MuraliAlenkruthKrishnan</username>
+        <id>681</id>
+      </contributor>
+      <comment>/* Source Code */</comment>
+      <text xml:space="preserve" bytes="18938">==Objective and Introduction to the Project==
+In this course project, we design an open-source, parameterized Cyclic Redundancy Check (CRC) [1]–[3],[13] accelerator. 
+We design a parameterized CRC accelerator which will be interfaced with the AMD-Xilinx Zynq Processing System present in the Pynq Z1 board through an AXI-Lite bus[5].
+
+The CRC Accelerator can perform 32bit CRC calculations compliant with the IEEE 802.3 (MPEG2) standard, and can also support 16bit CRC Calculations complying with the CRC16-BUYPASS implementation.
+CRC BUYPASS is a variation over CRC16-MODBUS, differing in the initial value and the final reflection of the output bytes. (Reflection is the operation of flipping the bits to reflect it's previous state, i.e. flipping temp[7:0] into temp[0:7].)
+
+A Pynq overlay[6] will be created for the CRC accelerator which will be accessible through Jupyter Notebooks[7] for everyone to use.
+
+Our [http://venividiwiki.ee.virginia.edu/mediawiki/images/e/e1/Perf_results.png results] show that a dedicated hardware CRC can perform 49 CRC32-MPEG2 computations while the software library performs one such computation when the CRC is calculated for a 4kB file. Likewise, the 16bit CRC accelerator can perform 24 CRC16-BUYPASS calculations while the software performs one such computation with the same 4kB file.
+
+Interested? Check the ''dev_fpga'' branch in our [https://github.com/Alenkruth/crc_accelerator Github] repository.
+
+==Motivation==
+Cyclic Redundancy Check (CRC) is widely used as an alternative to parity and checksum calculations for detecting errors in data transmissions and sometimes data storage.
+
+We modify and integrate accelerator to the Zynq PS to perform CRC, which helps speed up the entire system thanks to fine grained offloading of compute intensive CRC calculations.
+Unlike the current open-source CRC accelerators[8], [9], our design will be parameterized to work on 16 and 32-bit polynomial widths. 
+The current version of the design does not support custom polynomials and sticks to supporting two specific polynomials complying to two specific standards as stated earlier.
+
+Our motivation for this project was to observe and exploit the potential speed up offered by dedicated hardware acceleration of CRC computation on embedded, resource-constrained devices.
+Moreover, our target FPGA board, the Pynq-Z1[10], does not have a CRC accelerator in its Hard-Processor System[11] which provides us an opportunity to obtain raw SW vs HW performance metrics since the SW CRC will be performed by the ALUs and not by an on-chip accelerator.
+
+Finally, this project also serves as a means to practically understand the need and importance of domain-specific accelerators in the modern computing space with CRC as a toy example.
+
+==Introduction to CRC==
+
+[[File:Suspicious.png|center|800px|alt=Meme about CRC]]
+
+CRCs are based on the theory of cyclic error-correcting codes. 
+The use of systematic cyclic codes, which encode messages by adding a fixed-length check value, for the purpose of error detection in communication networks, was first proposed by W. Wesley Peterson in 1961. 
+Cyclic codes are not only simple to implement but have the benefit of being particularly well suited for the detection of burst errors: contiguous sequences of erroneous data symbols in messages. 
+This is important because burst errors are common transmission errors in many communication channels, including magnetic and optical storage devices. 
+Typically an n-bit CRC applied to a data block of arbitrary length will detect any single error burst not longer than n bits, and the fraction of all longer error bursts that it will detect is (1 − 2−n).
+
+CRC uses a special polynomial which becomes the divisor in a polynomial long division.
+The message is the dividend. 
+The quotient is discarded and the remainder becomes the result.
+It should be noted that the the polynomial coefficients are calculated according to the arithmetic of a finite field, so the addition operation can always be performed bitwise-parallel (there is no carry between digits).
+
+In practice, all commonly used CRCs employ the Galois field of two elements, GF(2). 
+
+A CRC is called an n-bit CRC when its check value is n bits long. 
+For a given n, multiple CRCs are possible, each with a different polynomial. 
+Such a polynomial has highest degree n, which means it has n + 1 terms. 
+In other words, the polynomial has a length of n + 1; its encoding requires n + 1 bits. 
+
+The simplest error-detection system, the parity bit, is in fact a 1-bit CRC: it uses the generator polynomial x + 1 (two terms), and has the name CRC-1. &lt;!-- This is a comment --&gt;
+
+=== Simple CRC Example ===
+
+''This example is from the Wikipedia page for CRC [13]''
+
+We start with the message to be encoded:
+
+&lt;pre&gt;
+11010011101100
+&lt;/pre&gt;
+
+This is first padded with zeros corresponding to the bit length n of the CRC. This is done so that the resulting code word is in systematic form. Here is the first calculation for computing a 3-bit CRC:
+
+&lt;pre&gt;
+11010011101100 000 &lt;--- input right padded by 3 bits
+1011               &lt;--- divisor (4 bits) = x³ + x + 1
+------------------
+01100011101100 000 &lt;--- result
+&lt;/pre&gt;
+
+The algorithm acts on the bits directly above the divisor in each step. The result for that iteration is the bitwise XOR of the polynomial divisor with the bits above it. The bits not above the divisor are simply copied directly below for that step. The divisor is then shifted right to align with the highest remaining 1 bit in the input, and the process is repeated until the divisor reaches the right-hand end of the input row. Here is the entire calculation:
+
+&lt;pre&gt;
+11010011101100 000 &lt;--- input right padded by 3 bits
+1011               &lt;--- divisor
+01100011101100 000 &lt;--- result (note the first four bits are the XOR with the divisor beneath, the rest of the bits are unchanged)
+ 1011              &lt;--- divisor ...
+00111011101100 000
+  1011
+00010111101100 000
+   1011
+00000001101100 000 &lt;--- note that the divisor moves over to align with the next 1 in the dividend (since quotient for that step was zero)
+       1011             (in other words, it doesn't necessarily move one bit per iteration)
+00000000110100 000
+        1011
+00000000011000 000
+         1011
+00000000001110 000
+          1011
+00000000000101 000
+           101 1
+-----------------
+00000000000000 100 &lt;--- remainder (3 bits).  Division algorithm stops here as dividend is equal to zero.
+&lt;/pre&gt;
+
+Since the leftmost divisor bit zeroed every input bit it touched, when this process ends the only bits in the input row that can be nonzero are the n bits at the right-hand end of the row. These n bits are the remainder of the division step, and will also be the value of the CRC function (unless the chosen CRC specification calls for some postprocessing).
+
+== Implementation Details ==
+
+[[File:Crc_block_diagram.png|center|thumb|800px|Block diagram of Combinational CRC module integrated with Zynq Processing System|alt=CRC Accelerator integrated with Xilinx Zynq through AXI]]
+
+We generate our base accelerator code from one of the many online [http://outputlogic.com/?page_id=321 CRC generators] in Verilog. We then modify the code while retaining the core CRC logic to suit our needs and meet our design requirements
+===CRC Accelerator===
+The traditional method for implementing a CRC unit uses a shift register with XOR gates and feedback taps. 
+We use the same fundamental hardware gates and will be trying to modify their architecture to obtain better performance.
+====Parameterizability====
+The current open-source CRC accelerators operate on a fixed polynomial width. 
+While this approach makes the design easier, it is not the most efficient solution. 
+As the CRC polynomial can be varied with the performance and reliability requirement of the system, we design a configurable CRC accelerator. 
+The CRC polynomial can be entered as a parameter to our design, thereby having a parameterized CRC accelerator that will read data from an interface register. 
+The user can also provide the polynomial width. 
+====Performance Optimization====
+The CRC computation is performed by combinational logic without any sequential elements.
+The latency of computation is dependent on the gate delay and the maximum gate delay will govern the frequency of the design.
+
+Since the polynomial is fixed per operation, we can keep the same copy of the polynomial and perform a series of XORs to obtain the final CRC. 
+
+As shown in the [http://venividiwiki.ee.virginia.edu/mediawiki/index.php/File:Crc_block_diagram.png figure], the CRC accelerator is created as an IP block and connected to the Zynq Processing System through an AXI-Lite interface. 
+In order to demonstrate an actual system, we use the BRAMs present in the FPGA to emulate actual processor memory and store/retrieve the data on which CRC is to be performed from it.
+By doing so, our demonstration tries to model the actual latencies that a real system may incur while fetching data from main memory or off-chip memory.
+
+Finally, we have created an Overlay for the CRC accelerator which can be used within the Jupyter Notebooks hosted on a Pynq-Z1 board.
+
+===Phase 2 Progress Updates===
+The complete report of our updates can be found [https://myuva-my.sharepoint.com/:b:/r/personal/jht9sy_virginia_edu/Documents/coursework/ece6502/project/documents/phase2/phase_2_report_fpga.pdf?csf=1&amp;web=1&amp;e=ZHHc3r here].
+
+The list of Updates are:
+# Successful creation of a CRC Unit and testing it with testbench
+# Successful integration of the unit with the Zynq HPS through AXI. (Technical difficulties faced with Microblaze integration is discussed in the report)
+# Successful testing of a Combinational CRC Unit with C program on Vitis.
+# Started working on creating the Pynq Overlay.
+
+[[File:Crc_test_comb.png|center|thumb|800px|Results of CRC System test on Vitis|alt=Results of CRC System test on Vitis]]
+
+===Final Updates===
+* We have completed all the tasks which we had listed in the To-Do list.
+* The final working overlay, and a notebook demonstrating the results can be found in the ''overlay'' directory in the ''dev_fpga'' branch of our [https://github.com/Alenkruth/crc_accelerator Github] repository.
+* The performance results from our experimentation are shown in the following figure. When compared based on the execution time on the same 4kb file, we can see that the accelerator performs 49x faster than the SW package in the case of CRC 32. The hardware is 24x faster than the SW package in the case of CRC16. It is interesting to note that the library takes the same amount of time irrespective of the data width.
+[[File:Perf_results.png|center|600px|Software vs Hardware Performance Comparison|alt=Software vs Hardware Performance Comparison]]
+* In addition to writing a testbench, we use a software-reference based functional verification approach where we compare the results from our design with a software golden reference model. The golden model of reference is a widely used Python software CRC library. Using a software golden model allows us to verify our design against a large input space without having to spend time writing targeted testbenches. A snippet of the verification results can be found in the following image.
+[[File:Result_verification.png|center|400px|Software Golden Model based functional verification results|alt=Software Golden Model based functional verification results]]
+* The overall Utilization of FPGA resources can be found [https://github.com/Alenkruth/crc_accelerator/blob/454ca3c29972d12ee5ab21d4abf932487aba6476/overlay/system_utilization.rpt in this report]. The resources utilized by the CRC accelerator individually can be found [https://github.com/Alenkruth/crc_accelerator/blob/3d0b71fca62c7ffab855c3791c2fc02755d65740/overlay/crc_utilization.rpt in this report].
+* A final section discussing about some future works and performance optimizations which we could not implement in the final submission is added to the wiki.
+
+==== Minimal Demonstration ====
+* Steps to reproduce the results can be found [https://github.com/Alenkruth/crc_accelerator/blob/dev_fpga/README.md here]. Please check the jupyter notebook for more details.
+* The demo starts with reading an image, converting it into a hex stream and storing it into the BRAM. The test image is shown.
+[[File:Test_image.jpg|center|400px|Test Image|alt=Test Image]]
+* For our demonstration we assume we have a transmitted and receiver which are simulated on the same board.
+* Transmission is the act of sending data to the external world or a receiver which is simulated by writing the data into a buffer.
+* Likewise, the reception is the act of receiving some transmitted data which is simulated as reading from a buffer in this demonstration.
+* Transmitting and receiving without noise:
+** The image is read from the BRAM and the CRC is computed after which the data is transmitted (written into a buffer)
+** In this case, the receiving device receives unaffected data and it performs the CRC on the image and the computed CRC will match with the received CRC as shown in the figure.
+[[File:Transmission.png|center|800px|Transmitted Image and CRC Computation|alt=Transmitted Image and CRC Computation]]
+* Transmitting and receiving with noise:
+** The image is read from the BRAM and the CRC is computed after which the data is transmitted (written into a buffer)
+** In this case, the receiving device receives data through a noisy channel
+*** This is simulated by passing the results in the buffer to a function which randomly inserts noise into the values.
+** The receiver reads the noisy data and it performs the CRC on the image and the computed CRC will 'NOT' match with the received CRC as shown in the figure.
+[[File:Noisy.png|center|800px|Noise Injection|alt=Noise Injection]]
+[[File:Noisy_transmission.png|center|800px|Noisy Image and CRC computation|alt=Noisy Image and CRC computation]]
+[[File:Individual_errors.png|center|800px|Packet Mismatch|alt=Packet Mismatch]]
+
+== List of Tasks and Workload Distribution ==
+
+[x] [Alenkruth, Khyati] Designing the CRC accelerator
+
+[x] [Alenkruth, Khyati] Write a verilog testbench to verify the functionality of the CRC logic
+
+[x] [Alenkruth] Integration of the Accelerator with Zynq Hardprocessor in place of Microblaze.
+
+[x] [Alenkruth] Write C testbench using Vitis to verify the functionality and integration of the accelerator.
+
+[x] [Alenkruth, Khyati] Parameterizing and optimizing the Accelerator (new sub-task). 
+
+[x] [Alenkruth, Khyati] Verification of the CRC accelerator (new sub-task).
+
+[x] [Khyati, Alenkruth] Create a Pynq Overlay for the CRC accelerator.
+
+[x] [Khyati, Alenkruth] Create a Jupyter notebook and import the CRC Overlay
+
+[x] [Khyati, Alenkruth] Obtain speed up metrics for the Accelerator.
+
+index:
+[ ] -&gt; not started
+[-] -&gt; ongoing
+[x] -&gt; completed
+
+== Future Work and Other possible directions of exploration ==
+# Parameterizing the CRC Accelerator further and obtaining the performance metrics
+## The current CRC Accelerator performs both 16 bit and 32 bit CRC. When compared to a software baseline, the 32bit CRC was hit with a 10x performance degradation when the 16bit CRC was added and additional muxes were introduced.
+## Implementing Dedicated accelerators for Each CRC widths will be an interesting study.
+# Pipelining the CRC implementation.
+## CRC performs repeated division by a polynomial. This can represented in the binary world as XORs. Building a pipelined CRC would provide better performance with a CRC result in every cycle.
+# Supporting Custom Polynomials.
+## We started out with a plan to support custom polynomials and our initial design supported it. Unfortunately, our final overlay did not use that design. While custom polynomials are usually not recommended in practice and will incur extra logic, it is a worthwhile exploration.
+
+==Equipment and Software Required==
+# Digilent Pynq-Z1 development board with AMD-Xilinx Zynq-7000 FPGA
+# Micro-USB cable and RJ45 Cable
+# Computer with Xilinx Vivado, Vitis, ModelSim installed for development, integration and testing
+# Any Web Browser that can display Jupyter notebooks hosted in the FPGA  
+
+==References==
+[1] W. W. Peterson and D. T. Brown, “Cyclic codes for error detection,” Proceedings of the IRE, vol. 49, no. 1, pp. 228–235, 1961. DOI: 10.1109/JRPROC.1961.287814.
+
+[2] P. Koopman and T. Chakravarty, “Cyclic redundancy code (CRC) polynomial selection for embedded networks,” in International Conference on Dependable Systems and Networks, 2004, 2004, pp. 145–154. DOI: 10.1109/DSN.2004.1311885.
+
+[3] P. Koopman, “32-bit cyclic redundancy codes for internet applications,” in Proceedings In- ternational Conference on Dependable Systems and Networks, 2002, pp. 459–468. DOI: 10.1109/DSN.2002.1028931.
+
+[4] Xilinx, Microblaze processor, [Online; accessed 27-March-2023], 2023. [Online]. Available: [https://www.xilinx.com/products/design-tools/microblaze.html link].
+
+[5] ARM Limited, AMBA AXI3 and AXI4 Protocol Specification. ARM Limited, 2010, [On-line; accessed 27-March-2023]. [Online]. Available: [https://developer.arm.com/documentation/ihi0022/e/AMBA-AXI3-and-AXI4-Protocol-Specification link].
+
+[6] Xilinx, Pynq overlays, [Online; accessed 27-March-2023], 2023. [Online]. Available: [https://pynq.readthedocs.io/en/v2.0/pynq_overlays.html link].
+
+[7] P. Jupyter, Jupyter notebook, [Online; accessed 27-March-2023], 2023. [Online]. Available: [https://jupyter-notebook.readthedocs.io/en/latest/ link].
+
+[8] PCI Express CRC generator, [https://opencores.org/projects/pci_express_crc link], [Online; accessed 27-March-2023].
+
+[9] Ultimate CRC, [https://opencores.org/projects/ultimate_crc link], [Online; accessed 27-March-2023].
+
+[10] Digilent, PYNQ-Z1 Python Productivity for Zynq-7000 ARM/FPGA SoC, [https://digilent.com/shop/pynq-z1-python-productivity-for-zynq-7000-arm-fpga-soc/ link], [On- line; accessed 27-March-2023].
+
+[11] Arm, Cortex-A9, [https://developer.arm.com/Processors/Cortex-A9 link], [Online; accessed 27-March-2023].
+
+[12] M. W. Azhar, T. T. Hoang, and P. Larsson-Edefors, “Cyclic redundancy checking (CRC) accelerator for the flexcore processor,” in 2010 13th Euromicro Conference on Digital System De- sign: Architectures, Methods and Tools, 2010, pp. 675–680. DOI: 10.1109/DSD.2010.51.
+
+[13] Wikipedia, Cyclic Redundancy Check. 2022. [Online]. Available: [https://en.wikipedia.org/wiki/Cyclic_redundancy_check link]
+
+[14] Online CRC Generator. [Online]. Available: [http://outputlogic.com/?page_id=321 link]
+
+==Source Code==
+* [https://github.com/Alenkruth/crc_accelerator Github]
+* [https://myuva-my.sharepoint.com/:u:/g/personal/jht9sy_virginia_edu/EWm65WqM_VhNiFkMdwFXFIMBgqwlA-1kA3YjkyNdRelxEg?e=OKiCjA Project Files] (Link to OneDrive)
+
+==Team Members==
+# Khyati Kiyawat, 1st Year Computer Science Ph.D. Student.
+# Alenkruth Krishnan Murali, 1st Year Computer Engineering Ph.D. Student.</text>
+    </revision>
+  </page>
+</mediawiki>
