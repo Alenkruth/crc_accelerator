@@ -15,7 +15,7 @@ Steps to follow:
 - Download/Clone this repository and checkout the dev_fpga branch.
 - Connect to your board to the internet and access the board with the IP assigned to it.
 - Once you log into the Jupyter Notebook Server hosted on the board, upload the [overlay](./overlay) 
-  directory to the root directory of the board. The demo should irrespective of the path.
+  directory to the root directory of the board. The demo should work irrespective of the path.
 - Open the _overlay_ directory within the localhost and then open the [crc_demo.ipynb](./overlay/crc_demo.ipynb)
   file.
 - The jupyter notebook should open and you should be able to execute the code present.
