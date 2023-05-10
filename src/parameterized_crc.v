@@ -6,6 +6,7 @@ module top_new #(
     input [DATA_WIDTH-2:0] data_in,
   	input [ADDR_WIDTH-1:0] address,
     input [3:0] crc_type,
+    input [31:0] init,
   	//input crc_address,
 	  output [DATA_WIDTH-1:0] data_out,
   	output [DATA_WIDTH-2:0] top_crc_out
@@ -28,7 +29,7 @@ freepdk45_sram_4kbytes_1rw_32x1024_8 SRAM (
 
 crc C0 (
         .data_in(data_out_read[31:0]),
-        .init(32'hffffffff),
+        .init(init),
         .select(crc_type),
         .crc_out(top_crc_out)
         );
