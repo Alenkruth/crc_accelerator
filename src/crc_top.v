@@ -1,4 +1,4 @@
-module top #(
+module crc_top #(
     parameter ADDR_WIDTH = 11,
     parameter DATA_WIDTH = 33)(
     input clk,
