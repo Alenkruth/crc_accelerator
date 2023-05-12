@@ -1,0 +1,75 @@
+|==============================================================================|
+|=========                       OpenRAM v1.2.8                       =========|
+|=========                                                            =========|
+|=========               VLSI Design and Automation Lab               =========|
+|=========        Computer Science and Engineering Department         =========|
+|=========            University of California Santa Cruz             =========|
+|=========                                                            =========|
+|=========          Usage help: openram-user-group@ucsc.edu           =========|
+|=========        Development help: openram-dev-group@ucsc.edu        =========|
+|=========                See LICENSE for license info                =========|
+|==============================================================================|
+** Start: 04/19/2023 22:48:42
+Technology: freepdk45
+Total size: 32768 bits
+Word size: 32
+Words: 1024
+Banks: 1
+Write size: 8
+RW ports: 1
+R-only ports: 0
+W-only ports: 0
+DRC/LVS/PEX is only run on the top-level design to save run-time (inline_lvsdrc=True to do inline checking).
+Characterization is disabled (using analytical delay models) (analytical_delay=False to simulate).
+Only generating nominal corner timing.
+Words per row: None
+Output files are: 
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.lvs
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.sp
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.v
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.lib
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.py
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.html
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.log
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.lef
+/home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.gds
+** Submodules: 18.1 seconds
+** Placement: 0.0 seconds
+**** Retrieving pins: 0.0 seconds
+**** Analyzing pins: 0.0 seconds
+**** Finding blockages: 7.4 seconds
+**** Converting blockages: 0.1 seconds
+**** Converting pins: 0.2 seconds
+**** Separating adjacent pins: 0.0 seconds
+*** Finding pins and blockages: 130.9 seconds
+*** Maze routing pins: 177.6 seconds
+**** Retrieving pins: 0.0 seconds
+**** Analyzing pins: 0.0 seconds
+**** Finding blockages: 7.5 seconds
+**** Converting blockages: 0.2 seconds
+**** Converting pins: 6.0 seconds
+**** Separating adjacent pins: 28.7 seconds
+*** Finding pins and blockages: 158.4 seconds
+*** Maze routing supplies: 737.7 seconds
+** Routing: 1954.3 seconds
+WARNING: file klayout.py: line 96: DRC Errors freepdk45_sram_4kbytes_1rw_32x1024_8	1
+
+** Verification: 853.8 seconds
+** SRAM creation: 2826.2 seconds
+SP: Writing to /home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.sp
+** Spice writing: 1.6 seconds
+GDS: Writing to /home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.gds
+** GDS: 1.1 seconds
+LEF: Writing to /home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.lef
+** LEF: 0.0 seconds
+LVS: Writing to /home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.lvs.sp
+** LVS writing: 0.6 seconds
+LIB: Characterizing... 
+** Characterization: 1.7 seconds
+Config: Writing to /home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.py
+** Config: 0.0 seconds
+Datasheet: Writing to /home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.html
+** Datasheet: 0.1 seconds
+Verilog: Writing to /home/khyati/ADDLab/OpenRAM/temp/freepdk45_sram_4kbytes_1rw_32x1024_8/freepdk45_sram_4kbytes_1rw_32x1024_8.v
+** Verilog: 0.0 seconds
+** End: 2831.4 seconds
